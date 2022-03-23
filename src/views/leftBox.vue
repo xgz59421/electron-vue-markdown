@@ -3,19 +3,19 @@
     <el-input v-model="searchValue" @change="searchFile($event)" :clearable='true' class="file-search" placeholder="搜索"
       prefix-icon="el-icon-search" />
     <div v-for="(file, index) in fileList" :key="file.id">
-      <div v-if="file.isEdit==false" @click="fileClick(file)" class="file-box" :class="{active: file.selected}">
+      <div v-if="file.isEdit==false" @click="openFile(file)" class="file-box" :class="{active: file.selected}">
         <i class="el-icon-document"></i>
         <span class="file-name">{{file.title}}</span>
-        <i class="el-icon-edit" @click.stop="editStateHandle(file, true)"></i>
+        <i class="el-icon-edit" @click.stop="editFileHandle(file, true)"></i>
         <i class="el-icon-delete" @click.stop="removeFile(index)"></i>
       </div>
       <div v-else class="edit-box">
         <el-input v-model="file.title" @change="changeFileName(file)" />
-        <i class="el-icon-close" @click="editStateHandle(file, false)"></i>
+        <i class="el-icon-close" @click="editFileHandle(file, false)"></i>
       </div>
     </div>
     <el-button-group class="bottom-btns">
-      <el-button type="primary">新建</el-button>
+      <el-button type="primary" @click.stop="newFile">新建</el-button>
       <el-button type="primary">导入</el-button>
     </el-button-group>
   </el-aside>
@@ -43,13 +43,13 @@
       })
     },
     methods: {
-      ...mapMutations(['removeFile', 'editState', 'changeFileName', 'searchFile', 'fileClick']),
-      editStateHandle(file, state) {
+      ...mapMutations(['removeFile', 'editFile', 'changeFileName', 'searchFile', 'openFile', 'newFile']),
+      editFileHandle(file, state) {
         let payload = {
           ...file,
           isEdit: state
         }
-        this.editState(payload)
+        this.editFile(payload)
       }
     }
   }
@@ -138,6 +138,7 @@
       justify-content: space-between;
       ::v-deep .el-button {
         flex: 1;
+        background-color: #6c8cbf;
       }
     }
   }

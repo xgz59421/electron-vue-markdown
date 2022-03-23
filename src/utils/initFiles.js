@@ -4,34 +4,39 @@ const initFiles = [{
   body: '## 文件1内容',
   createTime: '12345678',
   isEdit: false,
-  selected: false
+  selected: false,
+  isNew: false
 }, {
   id: '2',
   title: '文件2',
   body: '拉勾教育666',
   createTime: '12345678',
   isEdit: false,
-  selected: false
+  selected: false,
+  isNew: false
 }, {
   id: '3',
   title: '文件3',
   body: '前端前端',
   createTime: '12345678',
   isEdit: false,
-  selected: false
+  selected: false,
+  isNew: false
 }, {
   id: '4',
   title: '标题1',
   body: '44444',
   createTime: '12345678',
-  isEdit: false
+  isEdit: false,
+  isNew: false
 }, {
   id: '5',
   title: '标题2',
   body: '555555',
   createTime: '12345678',
   isEdit: false,
-  selected: true
-}, ]
+  selected: false,
+  isNew: false
+}]
 
 export default initFiles
