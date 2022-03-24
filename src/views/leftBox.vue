@@ -136,6 +136,7 @@
       bottom: 0;
       display: flex;
       justify-content: space-between;
+
       ::v-deep .el-button {
         flex: 1;
         background-color: #6c8cbf;
