@@ -4,7 +4,7 @@
       <el-tab-pane v-for="file in openFiles" :key="file.id" :name="file.id">
         <span slot="label">
           {{file.title}}
-          <i v-if="file.unsave<=1" class="el-icon-circle-close" @click.stop="tabRemove(file.id)" />
+          <i v-if="file.unsave<=1 || file.unsave==undefined" class="el-icon-circle-close" @click.stop="tabRemove(file.id)" />
           <i v-if="file.unsave>1" class="el-icon-circle-plus" @click.stop="tabRemove(file.id)" />
         </span>
         <wangeditor v-model="file.body" key="file.id" @onChange="editorChange(file)"></wangeditor>
@@ -34,6 +34,7 @@
     },
     mounted() {
       bus.$on('changeTabActive', this.changeTabActive)
+      bus.$on('tabRemove', this.tabRemove)
     },
     computed: {
       ...mapState(['files', 'openFiles']),
@@ -56,7 +57,6 @@
       },
       changeTabActive() {
         this.openFiles.forEach(file => {
-          console.log('file.selected', file.selected, this.activeId, file.id)
           if (file.selected) {
             this.activeId = file.id
           }
@@ -64,11 +64,6 @@
       },
       editorChange(file) {
         file.unsave = (file.unsave == undefined) ? 0 : file.unsave + 1
-        console.log('file.unsave', file.unsave)
-        // if (initFile.body != file.body) {
-        //   console.log('initFile.body', initFile, file)
-        //   file.fileEdit = true
-        // }
       }
     },
     watch: {

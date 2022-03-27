@@ -1,6 +1,9 @@
 const { app, BrowserWindow } = require('electron')
 const isDev = require('electron-is-dev')
 const path = require('path')
+const Store = require('electron-store')
+
+Store.initRenderer()
 
 let mainWindow
 
@@ -12,10 +15,9 @@ app.on('ready', () => {
     webPreferences: {
       nodeIntegration: true,
       enableRemoteModule: true,
-      webSecurity: false
+      webSecurity: true
     }
   })
-
   const urlLocation = isDev ? 'http://localhost:8080' : path.join(__dirname, '../dist/index.html')
 
   // urlLocation = path.join(__dirname, './dist/index.html')

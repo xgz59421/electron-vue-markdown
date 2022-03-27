@@ -10,13 +10,13 @@
         <i class="el-icon-delete" @click.stop="removeFile(index)"></i>
       </div>
       <div v-else class="edit-box">
-        <el-input v-model="file.title" @change="changeFileName(file)" />
+        <el-input v-model="file.title" @change="saveFileName(file)" />
         <i class="el-icon-close" @click="editFileHandle(file, false)"></i>
       </div>
     </div>
     <el-button-group class="bottom-btns">
-      <el-button type="primary" @click.stop="newFile">新建</el-button>
-      <el-button type="primary">导入</el-button>
+      <el-button type="primary" @click.stop='newFile'>新建</el-button>
+      <el-button type="primary" @click.stop='importFile'>导入</el-button>
     </el-button-group>
   </el-aside>
 </template>
@@ -43,7 +43,7 @@
       })
     },
     methods: {
-      ...mapMutations(['removeFile', 'editFile', 'changeFileName', 'searchFile', 'openFile', 'newFile']),
+      ...mapMutations(['removeFile', 'editFile', 'saveFileName', 'searchFile', 'openFile', 'newFile', 'importFile']),
       editFileHandle(file, state) {
         let payload = {
           ...file,

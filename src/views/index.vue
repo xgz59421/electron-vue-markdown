@@ -1,7 +1,7 @@
 <template>
   <el-container class="container">
-    <left-box/>
-    <right-box/>
+    <left-box />
+    <right-box />
   </el-container>
 </template>
 
