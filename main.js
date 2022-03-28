@@ -1,7 +1,8 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, Menu } = require('electron')
 const isDev = require('electron-is-dev')
 const path = require('path')
 const Store = require('electron-store')
+const menuTemp = require('./src/utils/menuTemp.js')
 
 Store.initRenderer()
 
@@ -25,4 +26,7 @@ app.on('ready', () => {
 
   // 打开开发者工具
   mainWindow.webContents.openDevTools()
+  // 添加自定义的原生菜单
+  const menu = Menu.buildFromTemplate(menuTemp)
+  Menu.setApplicationMenu(menu)
 })

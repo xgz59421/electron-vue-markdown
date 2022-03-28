@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import initFiles from '@/utils/initFiles.js'
+// import initFiles from '@/utils/initFiles.js'
 import { v4 } from 'uuid'
 import bus from '@/utils/bus.js'
 import { setFileStore, getFileStore } from '@/utils/store.js'
@@ -50,6 +50,7 @@ export default new Vuex.Store({
           file.selected = true
         }
       })
+      console.log('state.files', state.files)
       // 判断是否打开过文件
       let hasFile = state.openFiles.some((file) => file.id == payload.id)
       if (!hasFile) state.openFiles.push({
@@ -89,7 +90,10 @@ export default new Vuex.Store({
     newFile(state) {
       for (let i = 0; i < state.files.length; i++) {
         const file = state.files[i]
+        // 如果新建文件时, 还有新建的文件, 则不新建文件
         if (file.isNew) return
+        // 新建文件时候, 其他文件都不再是编辑模式
+        file.isEdit = false
       }
       const newId = v4()
       state.files.push({
@@ -97,7 +101,7 @@ export default new Vuex.Store({
         title: '',
         createTime: new Date().getTime(),
         isEdit: true,
-        // selected: false,
+        selected: false,
         isNew: true
       })
       // 之后, vue for循环中 多了一个空的file, 需要手动修改title, 然后进入 saveFileName方法

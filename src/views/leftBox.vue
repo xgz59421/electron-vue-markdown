@@ -1,7 +1,6 @@
 <template>
   <el-aside class="aside">
-    <el-input v-model="searchValue" @change="searchFile($event)" :clearable='true' class="file-search" placeholder="搜索"
-      prefix-icon="el-icon-search" />
+    <el-input v-model="searchValue" @change="searchFile($event)" :clearable='true' class="file-search" placeholder="搜索" prefix-icon="el-icon-search" />
     <div v-for="(file, index) in fileList" :key="file.id">
       <div v-if="file.isEdit==false" @click="openFile(file)" class="file-box" :class="{active: file.selected}">
         <i class="el-icon-document"></i>
@@ -10,7 +9,7 @@
         <i class="el-icon-delete" @click.stop="removeFile(index)"></i>
       </div>
       <div v-else class="edit-box">
-        <el-input v-model="file.title" @change="saveFileName(file)" />
+        <el-input :ref='file.id' v-model="file.title" @change="saveFileName(file)" />
         <i class="el-icon-close" @click="editFileHandle(file, false)"></i>
       </div>
     </div>
@@ -22,11 +21,8 @@
 </template>
 
 <script>
-  import {
-    mapState,
-    mapGetters,
-    mapMutations
-  } from 'vuex'
+  import { mapGetters, mapMutations } from 'vuex'
+  const { ipcRenderer } = window.require('electron')
   export default {
     name: 'LeftBox',
     components: {},
@@ -37,10 +33,33 @@
       }
     },
     computed: {
-      ...mapState(['files']),
-      ...mapGetters({
-        fileList: "fileList"
-      })
+      ...mapGetters({fileList: "fileList"})
+    },
+    mounted() {
+      ipcRenderer.on('execute-create-file', this.newFile)
+      ipcRenderer.on('execute-search-file', this.search)
+      ipcRenderer.on('execute-import-file', this.importFile)
+    },
+    beforeDestroy() {
+      ipcRenderer.removeListener('execute-create-file', this.newFile)
+      ipcRenderer.removeListener('execute-search-file', this.search)
+      ipcRenderer.removeListener('execute-import-file', this.importFile)
+    },
+    watch: {
+      fileList: {
+        deep: true,
+        handler(data) {
+          data.forEach(file => {
+            if (file.isEdit) {
+              this.$nextTick(()=>{
+                // 获取焦点
+                console.log('ref', this.$refs[file.id][0])
+                this.$refs[file.id][0].focus()
+              })
+            }
+          })
+        }
+      }
     },
     methods: {
       ...mapMutations(['removeFile', 'editFile', 'saveFileName', 'searchFile', 'openFile', 'newFile', 'importFile']),
@@ -50,10 +69,12 @@
           isEdit: state
         }
         this.editFile(payload)
+      },
+      search() {
+        console.log('search')
       }
     }
   }
-
 </script>
 
 <style lang="less" scoped>
@@ -143,5 +164,4 @@
       }
     }
   }
-
 </style>

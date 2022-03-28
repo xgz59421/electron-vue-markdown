@@ -17,15 +17,11 @@
 <script>
   import wangeditor from 'wangeditor-vue'
   import bus from '../utils/bus.js'
-  import {
-    mapState,
-    mapMutations
-  } from 'vuex'
+  const { ipcRenderer } = window.require('electron')
+  import { mapState, mapMutations } from 'vuex'
   export default {
     name: 'RightBox',
-    components: {
-      wangeditor
-    },
+    components: { wangeditor },
     props: {},
     data() {
       return {
@@ -35,6 +31,10 @@
     mounted() {
       bus.$on('changeTabActive', this.changeTabActive)
       bus.$on('tabRemove', this.tabRemove)
+      ipcRenderer.on('execute-save-file', this.saveCurrentFile)
+    },
+    beforeDestroy() {
+      ipcRenderer.removeListener('execute-save-file', this.saveCurrentFile)
     },
     computed: {
       ...mapState(['files', 'openFiles']),
@@ -64,6 +64,10 @@
       },
       editorChange(file) {
         file.unsave = (file.unsave == undefined) ? 0 : file.unsave + 1
+      },
+      saveCurrentFile() {
+        console.log('saveCurrentFile', this.activeId)
+        console.log('saveCurrentFile', this.openFiles.find((file)=> file.id == this.activeId))
       }
     },
     watch: {
@@ -74,13 +78,13 @@
       // }
     }
   }
-
 </script>
 
 <style lang='less' scoped>
   .main {
     background-color: #96d7c6;
     padding: 0;
+
     .emptyPage {
       margin: 100px auto;
       text-align: center;
@@ -108,5 +112,4 @@
     }
 
   }
-
 </style>
