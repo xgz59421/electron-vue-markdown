@@ -50,7 +50,7 @@ export default new Vuex.Store({
           file.selected = true
         }
       })
-      console.log('state.files', state.files)
+      // console.log('state.files', state.files)
       // 判断是否打开过文件
       let hasFile = state.openFiles.some((file) => file.id == payload.id)
       if (!hasFile) state.openFiles.push({
