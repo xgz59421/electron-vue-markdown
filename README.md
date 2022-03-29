@@ -21,3 +21,4 @@
 1. 使用最新版本的electron 使用 window.require 会报错, 所以降低了electron的版本, 也可能和先右的node版本有关系
 2. 引入electron包后, 第一次运行有时会报错, 进入 node_modules\electron, 手动 node install.js解压 dist包
 3. leftBox.vue中 v-for 中使用了 ref, 由于ref是在dom渲染后有效, 则直接使用会不生效, 需要$next()
+4. 鼠标右键菜单添加, 判断右键按下的地方是否包含了'file-box'类名

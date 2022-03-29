@@ -16,7 +16,7 @@
 
 <script>
   import wangeditor from 'wangeditor-vue'
-  import bus from '../utils/bus.js'
+  import bus from '@/utils/bus.js'
   const { ipcRenderer } = window.require('electron')
   import { mapState, mapMutations } from 'vuex'
   export default {

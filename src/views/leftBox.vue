@@ -1,8 +1,8 @@
 <template>
-  <el-aside class="aside">
+  <el-aside class="aside" ref="filesRef">
     <el-input v-model="searchValue" @change="searchFile($event)" :clearable='true' class="file-search" placeholder="搜索" prefix-icon="el-icon-search" />
     <div v-for="(file, index) in fileList" :key="file.id">
-      <div v-if="file.isEdit==false" @click="openFile(file)" class="file-box" :class="{active: file.selected}">
+      <div v-if="file.isEdit==false" @contextmenu.prevent='mouseClick(file, index)' @click="openFile(file)" class="file-box" :class="{active: file.selected}">
         <i class="el-icon-document"></i>
         <span class="file-name">{{file.title}}</span>
         <i class="el-icon-edit" @click.stop="editFileHandle(file, true)"></i>
@@ -22,43 +22,56 @@
 
 <script>
   import { mapGetters, mapMutations } from 'vuex'
+  import mouseRightMenuTemp from '@/utils/menuRight.js'
+  import bus from '@/utils/bus.js'
   const { ipcRenderer } = window.require('electron')
+  const { remote } = window.require('electron')
+  const { Menu } = remote
   export default {
     name: 'LeftBox',
     components: {},
     props: {},
     data() {
       return {
-        searchValue: ''
+        searchValue: '',
+        mouseClickFile: {}
       }
     },
     computed: {
-      ...mapGetters({fileList: "fileList"})
+      ...mapGetters({ fileList: "fileList" })
     },
     mounted() {
       ipcRenderer.on('execute-create-file', this.newFile)
       ipcRenderer.on('execute-search-file', this.search)
       ipcRenderer.on('execute-import-file', this.importFile)
+      // 添加鼠标右键菜单
+      this.$refs.filesRef.$el.addEventListener('contextmenu', this.addMouseRightEvent)
+      bus.$on('renameMenu', this.renameMenu)
+      bus.$on('deleteMenu', this.deleteMenu)
     },
     beforeDestroy() {
+      this.$refs.filesRef.$el.addEventListener('contextmenu', this.addMouseRightEvent)
       ipcRenderer.removeListener('execute-create-file', this.newFile)
       ipcRenderer.removeListener('execute-search-file', this.search)
       ipcRenderer.removeListener('execute-import-file', this.importFile)
     },
     watch: {
-      fileList: {
-        deep: true,
+      'fileList': {
+        deep: true, // 深度遍历监控
         handler(data) {
-          data.forEach(file => {
-            if (file.isEdit) {
-              this.$nextTick(()=>{
-                // 获取焦点
-                console.log('ref', this.$refs[file.id][0])
+          this.$nextTick(() => {
+            this.fileList.forEach(file => {
+              // 如果是修改状态, 则获取焦点
+              if (file.isEdit) {
                 this.$refs[file.id][0].focus()
-              })
-            }
+              }
+            })
           })
         }
+      },
+      // fileList 修改, 
+      'fileList.length'(data) {
+        console.log('length', data)
       }
     },
     methods: {
@@ -72,6 +85,31 @@
       },
       search() {
         console.log('search')
+      },
+      // 鼠标右击事件
+      mouseClick(file, index) {
+        this.mouseClickFile = {
+          ...file,
+          index
+        }
+      },
+      // 鼠标右键菜单
+      addMouseRightEvent(ev) {
+        ev.preventDefault()
+        console.log('ev', ev)
+        let menu = Menu.buildFromTemplate(mouseRightMenuTemp)
+        ev.path.forEach((item) => {
+          if (item.className && (item.className.indexOf('file-box') > -1)) {
+            menu.popup({ window: remote.getCurrentWindow() })
+            return
+          }
+        })
+      },
+      deleteMenu() {
+        this.removeFile(this.mouseClickFile.index)
+      },
+      renameMenu() {
+        this.editFileHandle(this.mouseClickFile, true)
       }
     }
   }
