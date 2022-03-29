@@ -96,7 +96,6 @@
       // 鼠标右键菜单
       addMouseRightEvent(ev) {
         ev.preventDefault()
-        console.log('ev', ev)
         let menu = Menu.buildFromTemplate(mouseRightMenuTemp)
         ev.path.forEach((item) => {
           if (item.className && (item.className.indexOf('file-box') > -1)) {

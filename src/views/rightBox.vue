@@ -41,7 +41,7 @@
     },
     created() {},
     methods: {
-      ...mapMutations(['openFile', 'removeTab']),
+      ...mapMutations(['openFile', 'removeTab', 'saveFileContent']),
       tabRemove(id) {
         this.removeTab(id)
         // 关闭tab后, 打开上一次打开的文件
@@ -66,8 +66,8 @@
         file.unsave = (file.unsave == undefined) ? 0 : file.unsave + 1
       },
       saveCurrentFile() {
-        console.log('saveCurrentFile', this.activeId)
-        console.log('saveCurrentFile', this.openFiles.find((file)=> file.id == this.activeId))
+        let file = this.openFiles.find((file)=> file.id == this.activeId)
+        this.saveFileContent(file)
       }
     },
     watch: {

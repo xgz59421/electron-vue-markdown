@@ -10,8 +10,6 @@ const { remote } = window.require('electron')
 
 Vue.use(Vuex)
 
-// console.log('数据持久化存放位置', remote.app.getPath('userData'))
-
 export default new Vuex.Store({
   state: {
     // files: initFiles, // 总文件
@@ -64,7 +62,9 @@ export default new Vuex.Store({
           // 读取文件内容
           if (!file.body) {
             readFile(payload.path)
-            .then((data)=> file.body = data)
+            .then((data)=> {
+              file.body = data
+            })
           }
         }
       })
@@ -86,6 +86,9 @@ export default new Vuex.Store({
 
       })
     },
+    saveFileContent(state, curfile) {
+      writeFile(curfile.path, curfile.body).then(()=>console.log('success'))
+    },
     // 新建文件
     newFile(state) {
       for (let i = 0; i < state.files.length; i++) {
@@ -99,6 +102,7 @@ export default new Vuex.Store({
       state.files.push({
         id: newId,
         title: '',
+        body: '',
         createTime: new Date().getTime(),
         isEdit: true,
         selected: false,
@@ -203,9 +207,10 @@ export default new Vuex.Store({
             return {
               id: v4(),
               title: path.basename(filePath, '.md'),
+              body: '',
               path: filePath,
               isEdit: false,
-              selected: false,
+              selected: false
             }
           })
 
@@ -224,7 +229,11 @@ export default new Vuex.Store({
             })
           }
         } else {
-          console.log('未选择文件导入')
+          remote.dialog.showMessageBox({
+            type: 'info',
+            title: "导入md文档",
+            message: '未选择文件导入'
+          })
         }
       })
     }
